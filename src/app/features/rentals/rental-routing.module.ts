@@ -4,7 +4,6 @@ import { FormComponent } from './components/form/form.component';
 import { DetailComponent } from './components/detail/detail.component';
 import { ListComponent } from './components/list/list.component';
 
-
 const routes: Routes = [
   { title: 'Rentals', path: '', component: ListComponent },
   { title: 'Rentals - detail', path: 'detail/:id', component: DetailComponent },
@@ -14,6 +13,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class RentalRoutingModule { }
+export class RentalRoutingModule {}
