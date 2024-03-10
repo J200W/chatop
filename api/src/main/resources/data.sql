@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS "maessage";
+DROP TABLE IF EXISTS "message";
 DROP TABLE IF EXISTS "picture";
 DROP TABLE IF EXISTS "rental";
 DROP TABLE IF EXISTS "user";
