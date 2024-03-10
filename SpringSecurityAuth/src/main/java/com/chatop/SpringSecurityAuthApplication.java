@@ -1,13 +1,13 @@
-package com.chatop.api;
+package com.chatop;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ApiApplication {
+public class SpringSecurityAuthApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ApiApplication.class, args);
+		SpringApplication.run(SpringSecurityAuthApplication.class, args);
 	}
 
 }
