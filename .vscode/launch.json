@@ -4,6 +4,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ApiApplication",
+            "request": "launch",
+            "mainClass": "com.chatop.api.ApiApplication",
+            "projectName": "api"
+        },
+        {
+            "type": "java",
+            "name": "SpringSecurityAuthApplication",
+            "request": "launch",
+            "mainClass": "com.chatopbackend.SpringSecurityAuth.SpringSecurityAuthApplication",
+            "projectName": "SpringSecurityAuth"
+        },
+        {
+            "type": "java",
             "name": "SpringSecurityAuthApplication",
             "request": "launch",
             "mainClass": "com.chatop.SpringSecurityAuthApplication",
