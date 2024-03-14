@@ -1,11 +1,11 @@
-package com.chatop.model;
+package com.chatop.api.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import lombok.Data;
 
@@ -24,7 +24,7 @@ public class User {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The name of the user
@@ -41,6 +41,10 @@ public class User {
      * The role of the user
      */
     @Column(name = "role")
-    private int role;
+    private Integer role;
+
+    public User(Integer id) {
+        this.id = id;
+    }
 
 }

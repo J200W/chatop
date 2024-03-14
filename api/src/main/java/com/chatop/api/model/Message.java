@@ -1,11 +1,12 @@
-package com.chatop.model;
+package com.chatop.api.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import lombok.Data;
 
@@ -23,7 +24,7 @@ public class Message {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The content of the message
@@ -35,12 +36,15 @@ public class Message {
      * The sender id of the message
      */
     @Column(name = "sender_id")
-    private int senderId;
+    private Integer senderId;
 
     /**
      * The receiver id of the message
      */
-    @Column(name = "receiver_id")
-    private int receiverId;
+    @ManyToOne
+    private User receiver;
 
+    public Message(Integer id) {
+        this.id = id;
+    }
 }

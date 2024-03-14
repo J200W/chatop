@@ -1,11 +1,12 @@
-package com.chatop.model;
+package com.chatop.api.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import lombok.Data;
 
@@ -23,7 +24,7 @@ public class Picture {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The url of the picture
@@ -34,7 +35,7 @@ public class Picture {
     /**
      * The rental id of the picture
      */
-    @Column(name = "rental_id")
-    private int rentalId;
+    @OneToOne
+    private Rental rental;
 
 }
