@@ -9,10 +9,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "message")
+@NoArgsConstructor
 
 /**
  * The message class
@@ -35,14 +37,21 @@ public class Message {
     /**
      * The sender id of the message
      */
-    @Column(name = "sender_id")
-    private Integer senderId;
+    @ManyToOne
+    private User sender;
 
     /**
      * The receiver id of the message
      */
     @ManyToOne
     private User receiver;
+
+    /**
+     * The rental id of the message
+     */
+    @ManyToOne
+    private Rental rental;
+
 
     public Message(Integer id) {
         this.id = id;
