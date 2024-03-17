@@ -37,13 +37,20 @@ public class User {
     /**
      * The email of the user
      */
+    @Column(name = "email")
+    private String email;
+
+    /**
+     * The password of the user
+     */
+    @Column(name = "password")
     private String password;
 
     /**
      * The role of the user
      */
     @Column(name = "role")
-    private Integer role;
+    private String role;
 
     public User(Integer id) {
         this.id = id;
