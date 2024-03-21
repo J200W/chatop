@@ -2,40 +2,48 @@ use chatop;
 
 DROP TABLE IF EXISTS message;
 
-DROP TABLE IF EXISTS picture;
-
 DROP TABLE IF EXISTS rental;
 
-DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS user_role;
 
 DROP TABLE IF EXISTS role;
 
-CREATE TABLE role
-(
-    id   INT AUTO_INCREMENT PRIMARY KEY,
+DROP TABLE IF EXISTS user;
+
+
+CREATE TABLE user (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(250) NOT NULL,
+    email VARCHAR(250) NOT NULL UNIQUE,
+    password VARCHAR(250) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE role (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE user
-(
-    id       INT AUTO_INCREMENT PRIMARY KEY,
-    name     VARCHAR(250) NOT NULL,
-    password VARCHAR(250) NOT NULL,
-    role     INT          NOT NULL,
-    FOREIGN KEY (role) REFERENCES role (id)
+CREATE TABLE user_role (
+	user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (role_id) REFERENCES role (id)    
 );
 
-CREATE TABLE rental
-(
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    name        VARCHAR(50)    NOT NULL,
-    description VARCHAR(250)   NOT NULL,
-    price       DECIMAL(10, 2) NOT NULL,
-    surface     DECIMAL(10, 1) NOT NULL,
-    created_at  DATETIME       NOT NULL,
-    updated_at  DATETIME       NOT NULL,
-    owner_id    INT            NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES user (id)
+CREATE TABLE rental (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    description VARCHAR(250) NOT NULL,
+    url VARCHAR(250) DEFAULT 'https://via.placeholder.com/550',
+    price DECIMAL(10 , 2 ) NOT NULL,
+    surface DECIMAL(10 , 1 ) NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    owner_id INT NOT NULL,
+    FOREIGN KEY (owner_id)
+        REFERENCES user (id)
 );
 
 ALTER TABLE rental
@@ -47,37 +55,31 @@ ALTER TABLE rental
 ALTER TABLE rental
     MODIFY COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
-CREATE TABLE picture
-(
-    id        INT AUTO_INCREMENT PRIMARY KEY,
-    url       VARCHAR(250) NOT NULL,
-    rental_id INT          NOT NULL,
-    FOREIGN KEY (rental_id) REFERENCES rental (id)
-);
-
-CREATE TABLE message
-(
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    content     VARCHAR(250) NOT NULL,
-    sender_id   INT          NOT NULL,
-    receiver_id INT          NOT NULL,
-    send_at     DATETIME     NOT NULL,
-    rental_id   INT          NOT NULL,
-    FOREIGN KEY (sender_id) REFERENCES user (id),
-    FOREIGN KEY (receiver_id) REFERENCES user (id),
-    FOREIGN KEY (rental_id) REFERENCES rental (id)
+CREATE TABLE message (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    content VARCHAR(250) NOT NULL,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    send_at DATETIME NOT NULL,
+    rental_id INT NOT NULL,
+    FOREIGN KEY (sender_id)
+        REFERENCES user (id),
+    FOREIGN KEY (receiver_id)
+        REFERENCES user (id),
+    FOREIGN KEY (rental_id)
+        REFERENCES rental (id)
 );
 
 ALTER TABLE message
     MODIFY COLUMN send_at DATETIME DEFAULT CURRENT_TIMESTAMP;
 
-INSERT INTO role (name)
-VALUES ('ADMIN'),
-       ('USER');
-
-INSERT INTO user (name, password, role)
-VALUES ('dbuser', '$2y$10$.qkbukzzX21D.bqbI.B2R.tvWP90o/Y16QRWVLodw51BHft7ZWbc.', 2),
-       ('dbadmin', '$2y$10$kp1V7UYDEWn17WSK16UcmOnFd1mPFVF6UkLrOOCGtf24HOYt8p1iC', 1);
+INSERT INTO user (name, email, password)
+VALUES ('dbuser', 'user@gmail.com', '$2y$10$.qkbukzzX21D.bqbI.B2R.tvWP90o/Y16QRWVLodw51BHft7ZWbc.'),
+       ('dbadmin', 'admin@gmail.com', '$2y$10$kp1V7UYDEWn17WSK16UcmOnFd1mPFVF6UkLrOOCGtf24HOYt8p1iC');
+       
+INSERT INTO role(name) VALUES('ROLE_USER');
+INSERT INTO role(name) VALUES('ROLE_MODERATOR');
+INSERT INTO role(name) VALUES('ROLE_ADMIN');
 
 INSERT INTO rental (name, description, price, surface, owner_id)
 VALUES ('The District', 'Appartement 1 description', 500, 50, 2),
@@ -86,14 +88,6 @@ VALUES ('The District', 'Appartement 1 description', 500, 50, 2),
        ('Zentopia', 'Appartement 4 description', 800, 80, 2),
        ('Seaside Bluffs', 'Appartement 5 description', 900, 90, 2),
        ('Central Vantage', 'Appartement 6 description', 1000, 100, 2);
-
-INSERT INTO picture (url, rental_id)
-VALUES ('https://via.placeholder.com/350', 1),
-       ('https://via.placeholder.com/350', 2),
-       ('https://via.placeholder.com/350', 3),
-       ('https://via.placeholder.com/350', 4),
-       ('https://via.placeholder.com/350', 5),
-       ('https://via.placeholder.com/350', 6);
 
 INSERT INTO message (content, sender_id, receiver_id, rental_id)
 VALUES ('I am interested in your appartment', 2, 1, 1),
