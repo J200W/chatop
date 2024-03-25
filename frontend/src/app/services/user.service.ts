@@ -7,12 +7,15 @@ import { User } from '../interfaces/user.interface';
     providedIn: 'root',
 })
 export class UserService {
-
-    private pathService = 'http://localhost:3001/api/user';
+    private pathService = 'http://localhost:9192/api/user';
 
     constructor(private httpClient: HttpClient) {}
 
     public getUserById(id: number): Observable<User> {
-        return this.httpClient.get<User>(`${this.pathService}/${id}`);
+        return this.httpClient.get<User>(`${this.pathService}/${id}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
     }
 }

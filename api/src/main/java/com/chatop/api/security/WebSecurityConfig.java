@@ -27,8 +27,9 @@ public class WebSecurityConfig {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
+    // Gestionnaire des erreurs d'authentification
     @Autowired
-    private AuthEntryPointJwt unauthorizedHandler; // Gestionnaire des erreurs d'authentification
+    private AuthEntryPointJwt unauthorizedHandler;
 
     // Créer un filtre pour valider les jetons JWT
     @Bean
@@ -48,7 +49,7 @@ public class WebSecurityConfig {
         // d'authentification
         authProvider.setUserDetailsService(userDetailsService);
 
-        // Définir le mot de passe encoder pour le fournisseur d'authentification
+        // Définir le mot de passe encodeur pour le fournisseur d'authentification
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
@@ -63,7 +64,7 @@ public class WebSecurityConfig {
     }
 
     /*
-     * Cette méthode est utilisée pour encoder le mot de passe de l'utilisateur
+     * Cette méthode est utilisée pour encodeur le mot de passe de l'utilisateur
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -77,23 +78,30 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Désactiver la protection CSRF
         http.csrf(csrf -> csrf.disable())
-                
+
                 // Personnaliser la réponse pour les erreurs d'authentification
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                
+
                 // Désactiver la gestion de session
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Autoriser les requêtes pour les chemins d'authentification
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
-                        
-                        // Autoriser les requêtes pour les chemins de test
+                // Autoriser les requêtes pour ...
+                .authorizeHttpRequests(auth -> auth
+
+                        // les chemins d'authentification et d'inscription (pour les utilisateurs non
+                        // authentifiés)
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // les chemins de test (pour les utilisateurs non authentifiés)
                         .requestMatchers("/api/test/**").permitAll()
-                        
-                        // Autoriser les requêtes pour les autres chemins de l'API
+
+                        // le chemin de l'API pour obtenir les informations de l'utilisateur actuel
+                        .requestMatchers("/api/auth/me").authenticated()
+
+                        // les autres chemins de l'API (pour les utilisateurs authentifiés)
                         .anyRequest().authenticated());
 
-        // Ajouter un filtre pour valider les jetons JWT
+        // Ajouter un fournisseur d'authentification
         http.authenticationProvider(authenticationProvider());
 
         // Ajouter un filtre pour valider les jetons JWT

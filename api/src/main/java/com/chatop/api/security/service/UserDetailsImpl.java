@@ -12,6 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.chatop.api.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * UserDetailsImpl est utilisé pour implémenter UserDetails et pour charger les
+ * informations de l'utilisateur
+ */
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
@@ -37,30 +41,46 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
 
     /*
+     * date de création de l'utilisateur
+     */
+    private String created_at;
+
+    /*
+     * date de mise à jour de l'utilisateur
+     */
+    private String updated_at;
+
+    /*
      * les roles de l'utilisateur
      */
     private Collection<? extends GrantedAuthority> authorities;
 
     /**
      * Constructor
+     * 
      * @param id
      * @param name
      * @param email
      * @param password
+     * @param created_at
+     * @param updated_at
      * @param authorities
      */
 
-    public UserDetailsImpl(Integer id, String name, String email, String password,
+    public UserDetailsImpl(Integer id, String name, String email, String password, String created_at, String updated_at,
             Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
         this.authorities = authorities;
     }
 
     /**
      * build qui permet de construire un UserDetailsImpl à partir d'un utilisateur
+     * 
      * @param user
      * @return
      */
@@ -74,6 +94,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getCreated_at(),
+                user.getUpdated_at(),
                 authorities);
     }
 
@@ -91,6 +113,14 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
     }
 
     @Override
