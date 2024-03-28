@@ -17,7 +17,7 @@ export class AuthService {
      * @default api/auth
      * @private
      */
-    private pathService: string = 'http://localhost:9192/api/auth';
+    private pathService: string = 'api/auth';
 
     constructor(private httpClient: HttpClient) {}
 
@@ -30,7 +30,6 @@ export class AuthService {
      */
 
     public register(registerRequest: RegisterRequest): Observable<AuthSuccess> {
-        console.log('registerRequest', registerRequest);
         return this.httpClient.post<AuthSuccess>(
             `${this.pathService}/register`,
             registerRequest
@@ -60,10 +59,7 @@ export class AuthService {
      */
 
     public me(): Observable<User> {
-        return this.httpClient.get<User>(`${this.pathService}/me`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-        });
+        console.log(`${this.pathService}/me`);
+        return this.httpClient.get<User>(`${this.pathService}/me`);
     }
 }

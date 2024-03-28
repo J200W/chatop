@@ -44,7 +44,7 @@ public class JwtUtils {
 
         // Générer un token JWT à partir du nom d'utilisateur de l'utilisateur
         return Jwts.builder()
-                .setSubject((userPrincipal.getEmail()))
+                .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -60,7 +60,7 @@ public class JwtUtils {
     }
 
     /*
-     * Cette méthode est utilisée pour obtenir le nom d'utilisateur à partir du token JWT
+     * Cette méthode est utilisée pour obtenir la date d'expiration du token JWT
      */
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key()).build()

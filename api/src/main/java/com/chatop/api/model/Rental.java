@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * La classe Rental représente une location
+ * The rental class
  */
 
 @Data
@@ -25,56 +25,38 @@ import lombok.NoArgsConstructor;
 public class Rental {
 
     /**
-     * L'identifiant de la location
+     * The id of the rental
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /**
-     * Le nom de la location
+     * The name of the rental
      */
     @Column(name = "name")
     private String name;
 
     /**
-     * La description de la location
+     * The description of the rental
      */
     @Column(name = "description")
     private String description;
 
     /**
-     * Le prix de la location
+     * The price of the rental
      */
     @Column(name = "price")
     private double price;
 
     /**
-     * La surface de la location
+     * The surface of the rental
      */
     @Column(name = "surface")
     private double surface;
 
-    /*
-     * La photo de la location
-     */
-    @Column(name = "picture")
-    private String picture;
-
-    /*
-     * La date de création de la location
-     */
-    @Column(name = "created_at")
-    private String created_at;
-
-    /*
-     * La date de mise à jour de la location
-     */
-    @Column(name = "updated_at")
-    private String updated_at;
-
     /**
-     * Le propriétaire de la location
+     * The owner id of the rental
      */
     @ManyToOne
     private User owner;

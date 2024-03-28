@@ -1,3 +1,3 @@
 export interface AuthSuccess {
-    accessToken: string;
+    token: string;
 }

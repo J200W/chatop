@@ -1,7 +1,5 @@
 package com.chatop.api.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,7 +72,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        // Authentification de l'utilisateur avec l'email et le mot de passe
+        // Authentification de l'utilisateur avec l'email et le mot de
+        // passe
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
@@ -84,9 +82,7 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         // Récupérer les détails de l'utilisateur authentifié
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal(); // cast ?
-
-        // Récupérer les roles de l'utilisateur
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
@@ -96,34 +92,6 @@ public class AuthController {
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                userDetails.getCreated_at(),
-                userDetails.getUpdated_at(),
-                roles));
-    }
-
-    /*
-     * Cette méthode est utilisée pour obtenir les informations de l'utilsateur
-     * courant
-     */
-    @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser() {
-
-        // Récupérer les informations de l'utilisateur courant
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-
-        // Récupérer les roles de l'utilisateur
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-
-        // Retourner les informations de l'utilisateur courant
-        return ResponseEntity.ok(new JwtResponse(null,
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                userDetails.getCreated_at(),
-                userDetails.getUpdated_at(),
                 roles));
     }
 
@@ -134,8 +102,7 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
 
         // Vérifier si l'email est déjà utilisé
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) { // COMMENT existsByEmail marche alors qu'il n'est
-                                                                      // pas implémenté ?
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
@@ -145,10 +112,6 @@ public class AuthController {
         User user = new User(signUpRequest.getName(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
-
-
-        user.setCreated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        user.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
         // Récupérer les roles de l'utilisateur et les ajouter à l'utilisateur
         Set<String> strRoles = signUpRequest.getRole();
@@ -191,24 +154,7 @@ public class AuthController {
         user.setRole(roles);
         userRepository.save(user);
 
-        // Authentification de l'utilisateur avec l'email et le mot de passe
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signUpRequest.getEmail(), signUpRequest.getPassword()));
-
-        // Mettre l'authentification dans le contexte de sécurité de Spring
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        // Récupérer les détails de l'utilisateur authentifié
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal(); // cast ?
-
         // Retourner un message de succès
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                userDetails.getCreated_at(),
-                userDetails.getUpdated_at(),
-                roles.stream().map(item -> item.getName().toString()).collect(Collectors.toList())));
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 }
