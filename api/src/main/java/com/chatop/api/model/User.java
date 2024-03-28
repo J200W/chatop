@@ -25,40 +25,53 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 /**
- * The user class
+ * La classe User est utilisée pour stocker les informations de l'utilisateur
  */
 
 public class User {
 
     /**
-     * The id of the user
+     * L'identifiant de l'utilisateur
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /**
-     * The name of the user
+     * Le nom de l'utilisateur
      */
     @Column(name = "name")
     private String name;
 
     /**
-     * The email of the user
+     * L'email de l'utilisateur
      */
     @Column(name = "email")
     private String email;
 
     /**
-     * The password of the user
+     * Le mot de passe de l'utilisateur
      */
     @Column(name = "password")
     private String password;
 
-    /**
-     * The roles of the user
+    /*
+     * La date de création de l'utilisateur
      */
-    @ManyToMany(fetch = FetchType.LAZY)
+
+    @Column(name = "created_at")
+    private String created_at;
+
+    /*
+     * La date de mise à jour de l'utilisateur
+     */
+    @Column(name = "updated_at")
+    private String updated_at;
+    
+    /**
+     * Les rôles de l'utilisateur
+     */
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> role = new HashSet<>();
 

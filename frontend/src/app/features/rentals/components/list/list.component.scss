@@ -1,6 +1,12 @@
 .list {
     margin: 20px;
 
+    .list-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 2fr));
+        gap: 1rem;
+    }
+
     .items {
         gap: 2rem;
     }
