@@ -57,7 +57,10 @@ export class FormComponent implements OnInit {
             this.rentalForm!.get('description')?.value
         );
 
-        formData.forEach((value, key) => console.log(key, value));
+        formData.append(
+            'owner',
+            this.sessionService.user?.id.toString() || ''
+        );
 
         if (!this.onUpdate) {
             this.rentalsService
@@ -87,7 +90,7 @@ export class FormComponent implements OnInit {
             price: [rental ? rental.price : '', [Validators.required]],
             description: [
                 rental ? rental.description : '',
-                [Validators.required],
+                [Validators.required, Validators.maxLength(255)],
             ],
         });
         if (!this.onUpdate) {

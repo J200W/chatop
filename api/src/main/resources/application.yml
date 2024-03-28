@@ -21,5 +21,6 @@ bezkoder:
         jwtExpirationMs: 86400000
 
 store:
-    uploadDir: /frontend/src/uploads/
-    rootDir: /Users/wj/Chatop
+    uploadDir: /frontend/src/assets/uploads/
+    rootDir: /Users/wj/Documents/GitHub/chatop
+    localPath: assets/uploads/

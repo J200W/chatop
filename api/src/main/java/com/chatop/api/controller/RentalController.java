@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import com.chatop.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,7 @@ import com.chatop.api.service.RentalService;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * The rental controller
+ * Le contrôleur RentalController est utilisé pour gérer les locations
  */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -27,6 +29,9 @@ public class RentalController {
 
     @Autowired
     private RentalService rentalService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * Le chemin du répertoire de téléchargement d'images
@@ -38,10 +43,13 @@ public class RentalController {
     @Value("${store.uploadDir}")
     private String uploadDir;
 
+    @Value("${store.localPath}")
+    private String localPath;
+
     /**
-     * Get all rentals
+     * Obtenir toutes les locations
      *
-     * @return - All rentals
+     * @return - Toutes les locations
      */
     @GetMapping("/rentals")
     public ResponseEntity<List<Rental>> getAllRentalsController() {
@@ -50,10 +58,10 @@ public class RentalController {
     }
 
     /**
-     * Get rental by id
+     * Obtenir une location par son identifiant
      *
-     * @param id - The id of the rental
-     * @return - The rental
+     * @param id - L'identifiant de la location
+     * @return - La location
      */
     @GetMapping("/rentals/{id}")
     public ResponseEntity<Rental> getRentalByIdController(@PathVariable("id") Integer id) {
@@ -62,40 +70,119 @@ public class RentalController {
     }
 
     /**
-     * Add rental
+     * Ajourter une location
      *
-     * @param rental - The rental to add
+     * @param picture     - La photo du bien
+     * @param name        - Le nom du bien
+     * @param price       - Le prix du bien
+     * @param description - La description du bien
+     * @param surface     - La surface du bien
+     * @param owner       - L'identifiant du propriétaire du bien
+     * @return un message de confirmation
      */
-    @PostMapping("/rentals")
-    public ResponseEntity<String> addRentalController(@RequestBody Rental rental) {
+    @PostMapping(path = "/rentals", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public @ResponseBody ResponseEntity<Object>
+    addRentalController(
+        @RequestPart("name") String name,
+        @RequestPart("surface") String surface,
+        @RequestPart("price") String price,
+        @RequestPart("picture") MultipartFile picture,
+        @RequestPart("description") String description,
+        @RequestPart("owner") String owner)
+    {
 
-        rentalService.addRental(rental);
-        return ResponseEntity.ok("Rental added");
+        // extraire le nom de l'image
+        String filename = Objects.requireNonNull(picture.getOriginalFilename())
+            .split("\\.")[0];
+
+        // extraire l'extension de l'image
+        String extension = "." + Objects.requireNonNull(picture.getOriginalFilename())
+            .split("\\.")[1];
+
+        // générer un identifiant aléatoire
+        String uniqueID = UUID.randomUUID().toString();
+
+        // chemin complet de l'image pour le stockage
+        String fullPath = rootDir + uploadDir + filename + uniqueID + extension;
+
+        // chemin local de l'image pour la base de données
+        String localPathImg = localPath + filename + uniqueID + extension;
+        try {
+            // create the directory to store the image
+            Path path = Paths.get(rootDir + uploadDir);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+
+            // sauvegarder l'image
+            Files.write(Paths.get(fullPath), picture.getBytes());
+
+            // sauvegarder l'image dans la base de données
+            Rental rental = new Rental();
+            rental.setName(name);
+            rental.setSurface(Double.parseDouble(surface));
+            rental.setPrice(Double.parseDouble(price));
+            rental.setDescription(description);
+            rental.setPicture(localPathImg);
+
+            rental.setOwner(this.userRepository.
+                findById(Integer.parseInt(owner))
+                .orElseGet(null));
+            rental.setCreated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                .format(new Date()));
+            rental.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                .format(new Date()));
+            rentalService.addRental(rental);
+
+        } catch (IOException e) {
+            // Effacer l'image si une erreur se produit
+            try {
+                Files.deleteIfExists(Paths.get(fullPath));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+
+        // Initialiser la réponse
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Rental added successfully");
+        return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 
     /**
-     * Update rental
+     * Mettre à jour une location
+     * @param name        - Le nom du bien
+     * @param price       - Le prix du bien
+     * @param description - La description du bien
+     * @param surface     - La surface du bien
+     * @return un message de confirmation
      */
-    @PutMapping(path="/rentals/{id}", consumes={ MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<String> updateRentalController(@RequestPart("picture") MultipartFile picture,
-                                                         @RequestPart("rental") Rental rental,
-                                                         @PathVariable("id") Integer id)
+    @PutMapping(path = "/rentals/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public @ResponseBody ResponseEntity<Object>
+    updateRentalController(
+        @PathVariable("id") Integer id,
+        @RequestPart("name") String name,
+        @RequestPart("surface") String surface,
+        @RequestPart("price") String price,
+        @RequestPart("description") String description)
     {
         try {
-            final Path picturePath = Paths.get(uploadDir);
-            final Path pictureFilePath = Paths.get(rootDir + uploadDir + picture.getOriginalFilename());
-
-            if (!picturePath.toFile().exists()) {
-                Files.createDirectories(picturePath);
-            }
-
-            Files.write(pictureFilePath, picture.getBytes());
-
-//            rentalService.updateRental();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            // sauvegarder l'image
+            Rental rental = rentalService.getRentalById(id).orElseGet(null);
+            rental.setName(name);
+            rental.setSurface(Double.parseDouble(surface));
+            rental.setPrice(Double.parseDouble(price));
+            rental.setDescription(description);
+            rental.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                .format(new Date()));
+            rentalService.updateRental(rental);
         }
-        return ResponseEntity.ok("Rental updated");
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Rental updated successfully");
+        return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
-
 }
