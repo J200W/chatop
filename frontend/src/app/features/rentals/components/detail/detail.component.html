@@ -15,7 +15,7 @@
         </mat-card-title>
         <mat-card-content>
             <div fxLayout="column" fxLayoutAlign="start center">
-                <img class="fit" [src]="rental.picture" alt="house picture" />
+                <img class="fit" [src]="rental.picture" alt="house picture"/>
             </div>
             <div
                 class="my2"
@@ -23,13 +23,13 @@
                 fxLayoutAlign="space-between center"
             >
                 <div fxLayout="center">
-                    <mat-icon> straighten </mat-icon>
+                    <mat-icon> straighten</mat-icon>
                     <span class="ml1">{{ rental.surface }} m2</span>
                 </div>
                 <div fxLayout="center">
-                    <mat-icon> nights_stay </mat-icon>
+                    <mat-icon> nights_stay</mat-icon>
                     <span class="ml1"
-                        >{{
+                    >{{
                             rental.price | currency : "EUR" : "symbol" : ".2-2"
                         }}
                         / by night</span
@@ -41,8 +41,7 @@
                 {{ rental.description }}
             </div>
             <div
-                class="date"
-                class="my2"
+                class="date my2"
                 fxLayout="row"
                 fxLayoutAlign="space-between center"
             >

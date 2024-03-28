@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Rental } from 'src/app/features/rentals/interfaces/rental.interface';
-import { RentalResponse } from '../interfaces/api/rentalResponse.interface';
-import { RentalsResponse } from '../interfaces/api/rentalsResponse.interface';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {Rental} from 'src/app/features/rentals/interfaces/rental.interface';
+import {RentalResponse} from '../interfaces/api/rentalResponse.interface';
+import {RentalsResponse} from '../interfaces/api/rentalsResponse.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -11,7 +11,8 @@ import { RentalsResponse } from '../interfaces/api/rentalsResponse.interface';
 export class RentalsService {
     private pathService = 'http://localhost:9192/api/rentals';
 
-    constructor(private httpClient: HttpClient) {}
+    constructor(private httpClient: HttpClient) {
+    }
 
     public all(): Observable<RentalsResponse> {
         return this.httpClient.get<RentalsResponse>(this.pathService, {
@@ -32,7 +33,12 @@ export class RentalsService {
     public update(id: string, form: FormData): Observable<RentalResponse> {
         return this.httpClient.put<RentalResponse>(
             `${this.pathService}/${id}`,
-            form
+            form,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                }
+            }
         );
     }
 }

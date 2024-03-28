@@ -58,9 +58,7 @@ export class LoginComponent {
         this.authSubscription = this.authService.login(loginRequest).subscribe(
             (response: AuthSuccess) => {
                 localStorage.setItem('token', response.accessToken);
-                console.log('response', response);
                 this.authService.me().subscribe((user: User) => {
-                    console.log('user', user);
                     this.sessionService.logIn(user);
                     this.router.navigate(['/rentals']);
                     this.authSubscription.unsubscribe();

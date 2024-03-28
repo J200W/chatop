@@ -63,18 +63,12 @@ export class RegisterComponent {
 
     public submit(): void {
         const registerRequest = this.form.value as RegisterRequest;
-        console.log('registerRequest', registerRequest);
         this.authSubscription = this.authService
             .register(registerRequest)
             .subscribe(
                 pipe(
                     (response: AuthSuccess) => {
-                        console.log('response', response);
                         localStorage.setItem('token', response.accessToken);
-                        console.log(
-                            "localStorage.getItem('token')",
-                            localStorage.getItem('token')
-                        );
                         this.authService.me().subscribe((user: User) => {
                             this.sessionService.logIn(user);
                             this.router.navigate(['/rentals']);

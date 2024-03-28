@@ -19,3 +19,7 @@ bezkoder:
     app:
         jwtSecret: ======================BezKoder=Spring===========================
         jwtExpirationMs: 86400000
+
+store:
+    uploadDir: /frontend/src/uploads/
+    rootDir: /Users/wj/Chatop

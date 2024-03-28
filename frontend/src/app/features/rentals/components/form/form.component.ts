@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SessionService } from 'src/app/services/session.service';
-import { RentalResponse } from '../../interfaces/api/rentalResponse.interface';
-import { Rental } from '../../interfaces/rental.interface';
-import { RentalsService } from '../../services/rentals.service';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {ActivatedRoute, Router} from '@angular/router';
+import {SessionService} from 'src/app/services/session.service';
+import {RentalResponse} from '../../interfaces/api/rentalResponse.interface';
+import {Rental} from '../../interfaces/rental.interface';
+import {RentalsService} from '../../services/rentals.service';
 
 @Component({
     selector: 'app-form',
@@ -25,7 +25,8 @@ export class FormComponent implements OnInit {
         private rentalsService: RentalsService,
         private sessionService: SessionService,
         private router: Router
-    ) {}
+    ) {
+    }
 
     public ngOnInit(): void {
         const url = this.router.url;
@@ -41,7 +42,7 @@ export class FormComponent implements OnInit {
     }
 
     public submit(): void {
-        const formData = new FormData();
+        const formData: FormData = new FormData();
         formData.append('name', this.rentalForm!.get('name')?.value);
         formData.append('surface', this.rentalForm!.get('surface')?.value);
         formData.append('price', this.rentalForm!.get('price')?.value);
@@ -55,6 +56,8 @@ export class FormComponent implements OnInit {
             'description',
             this.rentalForm!.get('description')?.value
         );
+
+        formData.forEach((value, key) => console.log(key, value));
 
         if (!this.onUpdate) {
             this.rentalsService
@@ -72,8 +75,6 @@ export class FormComponent implements OnInit {
     }
 
     private initForm(rental?: Rental): void {
-        console.log(rental);
-        console.log(this.sessionService.user!.id);
         if (
             rental !== undefined &&
             rental?.owner?.id !== this.sessionService.user!.id
