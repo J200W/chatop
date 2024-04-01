@@ -17,10 +17,10 @@ Ce projet est un portail en ligne permettant aux utilisateurs de rechercher et d
 
 ## Comment utiliser le projet
 - Cloner le repository depuis GitHub.
-- Installer les dépendances avec npm install.
+- Installer les dépendances avec ```npm install```.
 - Créer une base de données PostgreSQL et configurer les paramètres de connexion dans le fichier .env.
-- Exécuter les migrations de la base de données avec npm run migrate.
-- Démarrer le serveur avec npm start.
+- Exécuter les migrations de la base de données avec ```npm run migrate```.
+- Démarrer le serveur avec ```npm start```.
 - Accéder à l'API via ```http://localhost:9192```.
 
 ## Documentation de l'API
