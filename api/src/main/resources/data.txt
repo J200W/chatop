@@ -29,7 +29,7 @@ CREATE TABLE user_role (
 	user_id INT NOT NULL,
     role_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user (id),
-    FOREIGN KEY (role_id) REFERENCES role (id)    
+    FOREIGN KEY (role_id) REFERENCES role (id)
 );
 
 CREATE TABLE rental (
@@ -76,9 +76,9 @@ ALTER TABLE message
 INSERT INTO user (name, email, password)
 VALUES ('dbuser', 'user@gmail.com', '$2y$10$.qkbukzzX21D.bqbI.B2R.tvWP90o/Y16QRWVLodw51BHft7ZWbc.'),
        ('dbadmin', 'admin@gmail.com', '$2y$10$kp1V7UYDEWn17WSK16UcmOnFd1mPFVF6UkLrOOCGtf24HOYt8p1iC');
-       
+
 INSERT INTO role(name) VALUES('ROLE_USER');
-INSERT INTO role(name) VALUES('ROLE_MODERATOR');
+INSERT INTO role(name) VALUES('ROLE_OWNER');
 INSERT INTO role(name) VALUES('ROLE_ADMIN');
 
 INSERT INTO rental (name, description, price, surface, owner_id)

@@ -67,7 +67,7 @@ public class User {
      */
     @Column(name = "updated_at")
     private String updated_at;
-    
+
     /**
      * Les rôles de l'utilisateur
      */
@@ -79,5 +79,9 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public User(Integer id) {
+        this.id = id;
     }
 }

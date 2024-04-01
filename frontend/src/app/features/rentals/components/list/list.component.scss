@@ -1,6 +1,10 @@
 .list {
     margin: 20px;
 
+    .mat-card-header {
+        margin-bottom: 20px;
+    }
+
     .list-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 2fr));
@@ -15,5 +19,13 @@
         width: 100%;
         height: 250px;
         object-fit: cover;
+    }
+
+    .mat-card-content > p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
     }
 }

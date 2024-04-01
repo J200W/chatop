@@ -10,4 +10,10 @@ import com.chatop.api.model.Message;
 
 public interface MessageRepository extends JpaRepository<Message, Integer> {
 
+    /**
+     * Delete all messages of a rental
+     *
+     * @param rentalId the id of the rental
+     */
+    void deleteAllByRentalId(Integer rentalId);
 }

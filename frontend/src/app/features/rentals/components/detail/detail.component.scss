@@ -5,3 +5,15 @@
 .owner {
     margin-left: 40px;
 }
+
+/* Remove border when selected*/
+
+textarea {
+    background-color: #f6f6f6;
+    border: none;
+    padding: 10px;
+}
+
+textarea:focus {
+    outline: none;
+}

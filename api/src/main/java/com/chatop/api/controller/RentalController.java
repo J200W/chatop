@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.chatop.api.repository.UserRepository;
+import com.chatop.api.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,9 @@ public class RentalController {
 
     @Autowired
     private RentalService rentalService;
+
+    @Autowired
+    private MessageService messageService;
 
     @Autowired
     private UserRepository userRepository;
@@ -183,6 +187,25 @@ public class RentalController {
         }
         Map<String, String> response = new HashMap<>();
         response.put("message", "Rental updated successfully");
+        return new ResponseEntity<Object>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Supprimer une location
+     *
+     * @param id - L'identifiant de la location
+     * @return un message de confirmation
+     */
+
+    @DeleteMapping("/rentals/{id}")
+    public ResponseEntity<Object> deleteRentalController(@PathVariable("id") Integer id) {
+        // delete all the messages related to the rental
+        messageService.deleteAllMessagesOfRental(id);
+
+        // delete the rental
+        rentalService.deleteRental(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Rental deleted successfully");
         return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 }

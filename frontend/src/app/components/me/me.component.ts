@@ -17,7 +17,6 @@ export class MeComponent implements OnInit {
     public ngOnInit(): void {
         this.authSubscription = this.authService.me().subscribe((user: User) => {
             this.user = user;
-            console.log(user);
             this.authSubscription.unsubscribe();
         });
     }

@@ -43,9 +43,9 @@ export class DetailComponent implements OnInit {
 
     public sendMessage(): void {
         const message = {
-            rental_id: this.rental!.id,
-            user_id: this.sessionService.user?.id,
-            message: this.messageForm.value.message,
+            rental: this.rental!.id,
+            sender: this.sessionService.user?.id,
+            content: this.messageForm.value.content
         } as MessageRequest;
 
         this.messagesService
@@ -60,7 +60,7 @@ export class DetailComponent implements OnInit {
 
     private initMessageForm() {
         this.messageForm = this.fb.group({
-            message: ['', [Validators.required, Validators.min(10)]],
+            content: ['', [Validators.required, Validators.min(10)]],
         });
     }
 }

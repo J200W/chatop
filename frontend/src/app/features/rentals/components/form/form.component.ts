@@ -35,7 +35,10 @@ export class FormComponent implements OnInit {
             this.id = this.route.snapshot.paramMap.get('id')!;
             this.rentalsService
                 .detail(this.id)
-                .subscribe((rental: Rental) => this.initForm(rental));
+                .subscribe((rental: Rental) => {
+                    console.log(rental);
+                    this.initForm(rental);
+                });
         } else {
             this.initForm();
         }
@@ -90,7 +93,7 @@ export class FormComponent implements OnInit {
             price: [rental ? rental.price : '', [Validators.required]],
             description: [
                 rental ? rental.description : '',
-                [Validators.required, Validators.maxLength(255)],
+                [Validators.required, Validators.maxLength(2000)],
             ],
         });
         if (!this.onUpdate) {

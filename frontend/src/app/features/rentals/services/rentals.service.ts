@@ -41,4 +41,12 @@ export class RentalsService {
             }
         );
     }
+
+    public delete(id: number): Observable<void> {
+        return this.httpClient.delete<void>(`${this.pathService}/${id}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+    }
 }

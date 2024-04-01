@@ -41,12 +41,6 @@ public class Message {
     private User sender;
 
     /**
-     * The receiver id of the message
-     */
-    @ManyToOne
-    private User receiver;
-
-    /**
      * The rental id of the message
      */
     @ManyToOne
