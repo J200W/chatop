@@ -4,7 +4,7 @@ Ce projet est un portail en ligne permettant aux utilisateurs de rechercher et d
 
 ## Technologies utilisées
 - Backend: Spring Boot
-- Base de données: MySQL ```(dans le fichier /api/min/ressources/data.txt)```
+- Base de données: MySQL ```(dans le fichier /api/src/ressources/data.txt)```
 - Documentation de l'API: Swagger
 - Outils supplémentaires: Postman, Mockoon
 
