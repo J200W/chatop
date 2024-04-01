@@ -4,15 +4,18 @@ import { Observable } from 'rxjs';
 import { User } from '../interfaces/user.interface';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class UserService {
+    private pathService = 'http://localhost:9192/api/user';
 
-  private pathService = 'api/user';
+    constructor(private httpClient: HttpClient) {}
 
-  constructor(private httpClient: HttpClient) { }
-
-  public getUserById(id: number): Observable<User> {
-    return this.httpClient.get<User>(`${this.pathService}/${id}`);
-  }
+    public getUserById(id: number): Observable<User> {
+        return this.httpClient.get<User>(`${this.pathService}/${id}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+    }
 }

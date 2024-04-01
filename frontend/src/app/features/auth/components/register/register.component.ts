@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { RegisterRequest } from '../../interfaces/registerRequest.interface';
 import { AuthSuccess } from '../../interfaces/authSuccess.interface';
 import { User } from 'src/app/interfaces/user.interface';
-import { pipe } from 'rxjs';
+import { Subscription, pipe } from 'rxjs';
 
 @Component({
     selector: 'app-register',
@@ -38,6 +38,15 @@ export class RegisterComponent {
         password: ['', [Validators.required, Validators.min(3)]],
     });
 
+    /**
+     * Subscription au service d'authentification
+     * @type {Subscription}
+     * @memberof RegisterComponent
+     * @private
+     *
+     */
+    private authSubscription: Subscription = new Subscription();
+
     constructor(
         private authService: AuthService,
         private fb: FormBuilder,
@@ -54,19 +63,23 @@ export class RegisterComponent {
 
     public submit(): void {
         const registerRequest = this.form.value as RegisterRequest;
-        console.log('registerRequest', registerRequest);
-        this.authService.register(registerRequest).subscribe(
-            pipe(
-                (response: AuthSuccess) => {
-                    localStorage.setItem('token', response.token);
-                    console.log("localStorage.getItem('token')", localStorage.getItem('token'));
-                    this.authService.me().subscribe((user: User) => {
-                        this.sessionService.logIn(user);
-                        this.router.navigate(['/rentals']);
-                    });
-                },
-                (error) => (this.onError = true)
-            )
-        );
+        this.authSubscription = this.authService
+            .register(registerRequest)
+            .subscribe(
+                pipe(
+                    (response: AuthSuccess) => {
+                        localStorage.setItem('token', response.accessToken);
+                        this.authService.me().subscribe((user: User) => {
+                            this.sessionService.logIn(user);
+                            this.router.navigate(['/rentals']);
+                            this.authSubscription.unsubscribe();
+                        });
+                    },
+                    (error) => {
+                        this.onError = true;
+                        this.authSubscription.unsubscribe();
+                    }
+                )
+            );
     }
 }
