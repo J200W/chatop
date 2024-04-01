@@ -1,4 +1,4 @@
-# README.md
+# Châtop
 Portail de mise en relation locataires-propriétaires pour la location saisonnière
 Ce projet est un portail en ligne permettant aux utilisateurs de rechercher et de contacter les propriétaires de propriétés disponibles à la location saisonnière sur la côte basque, et éventuellement dans toute la France. Les utilisateurs doivent s'authentifier pour accéder aux annonces de location.
 
