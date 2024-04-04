@@ -3,6 +3,7 @@ package com.chatop.api.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,16 +18,17 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * La classe User est utilisée pour stocker les informations de l'utilisateur
+ */
+
 @Data
 @Entity
 @Table(name = "user", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email")
 })
 @NoArgsConstructor
-
-/**
- * La classe User est utilisée pour stocker les informations de l'utilisateur
- */
+@Schema(name = "User", description = "La classe User est utilisée pour stocker les informations de l'utilisateur")
 
 public class User {
 
@@ -75,11 +77,18 @@ public class User {
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> role = new HashSet<>();
 
+    /**
+     * Le constructeur de l'utilisateur
+     */
     public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
     }
+
+    /**
+     * Le constructeur de l'utilisateur avec l'identifiant
+     */
 
     public User(Integer id) {
         this.id = id;

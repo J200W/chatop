@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,6 +41,10 @@ import com.chatop.api.repository.UserRepository;
 import com.chatop.api.security.jwt.JwtUtils;
 import com.chatop.api.security.service.UserDetailsImpl;
 
+/**
+ * Le contrôleur AuthController est utilisé pour gérer l'authentification des
+ * utilisateurs
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
@@ -73,32 +83,48 @@ public class AuthController {
      * Cette méthode est utilisée pour authentifier un utilisateur
      */
     @PostMapping("/login")
+    @Operation(summary = "Authentifier un utilisateur")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            content = {@Content(mediaType = "application/json")}
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Erreur lors de l'authentification de l'utilisateur !",
+            content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
-        // Authentification de l'utilisateur avec l'email et le mot de passe
-        Authentication authentication = authenticationManager.authenticate(
+        try {
+            // Authentification de l'utilisateur avec l'email et le mot de passe
+            Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
-        // Mettre l'authentification dans le contexte de sécurité de Spring
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+            // Mettre l'authentification dans le contexte de sécurité de Spring
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
 
-        // Récupérer les détails de l'utilisateur authentifié
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal(); // cast ?
+            // Récupérer les détails de l'utilisateur authentifié
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal(); // cast ?
 
-        // Récupérer les roles de l'utilisateur
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
+            // Récupérer les roles de l'utilisateur
+            List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        // Retourner le token JWT et les détails de l'utilisateur
-        return ResponseEntity.ok(new JwtResponse(jwt,
+            // Retourner le token JWT et les détails de l'utilisateur
+            return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 userDetails.getCreated_at(),
                 userDetails.getUpdated_at(),
                 roles));
+        } catch (Exception e) {
+            return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Erreur lors de l'authentification de l'utilisateur !"));
+        }
     }
 
     /*
@@ -106,109 +132,144 @@ public class AuthController {
      * courant
      */
     @GetMapping("/me")
+    @Operation(
+        summary = "Récupérer les informations de l'utilisateur courant",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            content = {@Content(mediaType = "application/json")}
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Erreur lors de la récupération des informations de l'utilisateur !",
+            content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> getCurrentUser() {
-
-        // Récupérer les informations de l'utilisateur courant
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+        try {
+            // Récupérer les informations de l'utilisateur courant
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
 
-        // Récupérer les roles de l'utilisateur
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
+            // Récupérer les roles de l'utilisateur
+            List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        // Retourner les informations de l'utilisateur courant
-        return ResponseEntity.ok(new JwtResponse(null,
+            // Retourner les informations de l'utilisateur courant
+            return ResponseEntity.ok(new JwtResponse(null,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 userDetails.getCreated_at(),
                 userDetails.getUpdated_at(),
                 roles));
+        } catch (Exception e) {
+            return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Erreur lors de la récupération des informations de l'utilisateur !"));
+        }
     }
 
     /*
      * Cette méthode est utilisée pour enregistrer un nouvel utilisateur
      */
     @PostMapping("/register")
+    @Operation(summary = "Enregistrer un nouvel utilisateur")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            content = {@Content(mediaType = "application/json")}
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Erreur lors de l'enregistrement de l'utilisateur !",
+            content = {@Content(mediaType = "application/json")})
+    })
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
 
-        // Vérifier si l'email est déjà utilisé
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) { // COMMENT existsByEmail marche alors qu'il n'est
-                                                                      // pas implémenté ?
-            return ResponseEntity
+        try {
+            // Vérifier si l'email est déjà utilisé
+            if (userRepository.existsByEmail(signUpRequest.getEmail())) { // COMMENT existsByEmail marche alors qu'il n'est
+                // pas implémenté ?
+                return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
-        }
+            }
 
-        // Créer un nouvel utilisateur
-        User user = new User(signUpRequest.getName(),
+            // Créer un nouvel utilisateur
+            User user = new User(signUpRequest.getName(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
 
 
-        user.setCreated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        user.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            user.setCreated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            user.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
-        // Récupérer les roles de l'utilisateur et les ajouter à l'utilisateur
-        Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
+            // Récupérer les roles de l'utilisateur et les ajouter à l'utilisateur
+            Set<String> strRoles = signUpRequest.getRole();
+            Set<Role> roles = new HashSet<>();
 
-        // Si les roles ne sont pas spécifiés, attribuer le role USER par défaut
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+            // Si les roles ne sont pas spécifiés, attribuer le role USER par défaut
+            if (strRoles == null) {
+                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        }
+                roles.add(userRole);
+            }
 
-        // Sinon, attribuer les roles spécifiés
-        else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+            // Sinon, attribuer les roles spécifiés
+            else {
+                strRoles.forEach(role -> {
+                    switch (role) {
+                        case "admin":
+                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
+                            roles.add(adminRole);
 
-                        break;
-                    case "owner":
-                        Role ownerRole = roleRepository.findByName(ERole.ROLE_OWNER)
+                            break;
+                        case "owner":
+                            Role ownerRole = roleRepository.findByName(ERole.ROLE_OWNER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(ownerRole);
+                            roles.add(ownerRole);
 
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER).get();
-                        if (userRole == null) {
-                            throw new RuntimeException("Error: Role is not found.");
-                        }
-                        roles.add(userRole);
-                }
-            });
-        }
+                            break;
+                        default:
+                            if (roleRepository.findByName(ERole.ROLE_USER).isPresent()) { // COMMENT
+                                Role userRole = roleRepository.findByName(ERole.ROLE_USER).get();
+                                roles.add(userRole);
+                            }
+                    }
+                });
+            }
 
-        // Enregistrer l'utilisateur dans la base de données avec les roles
-        user.setRole(roles);
-        userRepository.save(user);
+            // Enregistrer l'utilisateur dans la base de données avec les roles
+            user.setRole(roles);
+            userRepository.save(user);
 
-        // Authentification de l'utilisateur avec l'email et le mot de passe
-        Authentication authentication = authenticationManager.authenticate(
+            // Authentification de l'utilisateur avec l'email et le mot de passe
+            Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signUpRequest.getEmail(), signUpRequest.getPassword()));
 
-        // Mettre l'authentification dans le contexte de sécurité de Spring
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+            // Mettre l'authentification dans le contexte de sécurité de Spring
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
 
-        // Récupérer les détails de l'utilisateur authentifié
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal(); // cast ?
+            // Récupérer les détails de l'utilisateur authentifié
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal(); // cast ?
 
-        // Retourner un message de succès
-        return ResponseEntity.ok(new JwtResponse(jwt,
+            // Retourner un message de succès
+            return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 userDetails.getCreated_at(),
                 userDetails.getUpdated_at(),
                 roles.stream().map(item -> item.getName().toString()).collect(Collectors.toList())));
+        } catch (Exception e) {
+            return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Erreur lors de l'enregistrement de l'utilisateur !"));
+        }
     }
 }

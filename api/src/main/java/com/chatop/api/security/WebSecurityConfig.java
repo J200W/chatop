@@ -79,27 +79,33 @@ public class WebSecurityConfig {
         // Désactiver la protection CSRF
         http.csrf(csrf -> csrf.disable())
 
-                // Personnaliser la réponse pour les erreurs d'authentification
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            // Personnaliser la réponse pour les erreurs d'authentification
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 
-                // Désactiver la gestion de session
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // Désactiver la gestion de session
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Autoriser les requêtes pour ...
-                .authorizeHttpRequests(auth -> auth
+            // Autoriser les requêtes pour ...
+            .authorizeHttpRequests(auth -> auth
 
-                        // les chemins d'authentification et d'inscription (pour les utilisateurs non
-                        // authentifiés)
-                        .requestMatchers("/api/auth/**").permitAll()
+                // les chemins d'authentification et d'inscription (pour les utilisateurs non
+                // authentifiés)
+                .requestMatchers("/api/auth/**").permitAll()
 
-                        // les chemins de test (pour les utilisateurs non authentifiés)
-                        .requestMatchers("/api/test/**").permitAll()
+                // les chemins de test (pour les utilisateurs non authentifiés)
+                .requestMatchers("/api/test/**").permitAll()
 
-                        // le chemin de l'API pour obtenir les informations de l'utilisateur actuel
-                        .requestMatchers("/api/auth/me").authenticated()
+                // les chemins de documentation Swagger (pour les utilisateurs non authentifiés)
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/swagger-resources/**").permitAll()
 
-                        // les autres chemins de l'API (pour les utilisateurs authentifiés)
-                        .anyRequest().authenticated());
+                // le chemin de l'API pour obtenir les informations de l'utilisateur actuel
+                .requestMatchers("/api/auth/me").authenticated()
+
+                // les autres chemins de l'API (pour les utilisateurs authentifiés)
+                .anyRequest().authenticated());
 
         // Ajouter un fournisseur d'authentification
         http.authenticationProvider(authenticationProvider());

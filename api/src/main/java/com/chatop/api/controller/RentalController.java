@@ -9,6 +9,10 @@ import java.util.*;
 
 import com.chatop.api.repository.UserRepository;
 import com.chatop.api.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -56,9 +60,34 @@ public class RentalController {
      * @return - Toutes les locations
      */
     @GetMapping("/rentals")
+    @Operation(
+        summary = "Obtenir toutes les locations",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "200",
+            description = "Liste des locations récupérée avec succès"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "500",
+            description = "Erreur interne du serveur"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "401",
+            description = "Full authentication is required to access this resource"
+        )
+    })
     public ResponseEntity<List<Rental>> getAllRentalsController() {
-        List<Rental> rentals = rentalService.getAllRentals();
-        return ResponseEntity.ok(rentals);
+        try {
+            List<Rental> rentals = rentalService.getAllRentals();
+            return ResponseEntity.ok(rentals);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -68,9 +97,34 @@ public class RentalController {
      * @return - La location
      */
     @GetMapping("/rentals/{id}")
+    @Operation(
+        summary = "Obtenir une location par son identifiant",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "200",
+            description = "Location récupérée avec succès"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "404",
+            description = "Erreur interne du serveur"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "401",
+            description = "Full authentication is required to access this resource"
+        )
+    })
     public ResponseEntity<Rental> getRentalByIdController(@PathVariable("id") Integer id) {
-        Optional<Rental> rental = rentalService.getRentalById(id);
-        return rental.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            Optional<Rental> rental = rentalService.getRentalById(id);
+            return rental.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -85,6 +139,27 @@ public class RentalController {
      * @return un message de confirmation
      */
     @PostMapping(path = "/rentals", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(
+        summary = "Ajouter une location",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "200",
+            description = "Location ajoutée avec succès"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "500",
+            description = "Erreur interne du serveur"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "401",
+            description = "Full authentication is required to access this resource"
+        )
+    })
     public @ResponseBody ResponseEntity<Object>
     addRentalController(
         @RequestPart("name") String name,
@@ -92,8 +167,7 @@ public class RentalController {
         @RequestPart("price") String price,
         @RequestPart("picture") MultipartFile picture,
         @RequestPart("description") String description,
-        @RequestPart("owner") String owner)
-    {
+        @RequestPart("owner") String owner) {
 
         // extraire le nom de l'image
         String filename = Objects.requireNonNull(picture.getOriginalFilename())
@@ -128,15 +202,18 @@ public class RentalController {
             rental.setPrice(Double.parseDouble(price));
             rental.setDescription(description);
             rental.setPicture(localPathImg);
-
             rental.setOwner(this.userRepository.
-                findById(Integer.parseInt(owner))
-                .orElseGet(null));
+                findById(Integer.parseInt(owner)).orElseGet(null));
             rental.setCreated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                 .format(new Date()));
             rental.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                 .format(new Date()));
             rentalService.addRental(rental);
+
+            // Initialiser la réponse
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Location ajoutée avec succès");
+            return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (IOException e) {
             // Effacer l'image si une erreur se produit
@@ -145,17 +222,13 @@ public class RentalController {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        // Initialiser la réponse
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Rental added successfully");
-        return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 
     /**
      * Mettre à jour une location
+     *
      * @param name        - Le nom du bien
      * @param price       - Le prix du bien
      * @param description - La description du bien
@@ -163,14 +236,34 @@ public class RentalController {
      * @return un message de confirmation
      */
     @PutMapping(path = "/rentals/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(
+        summary = "Mettre à jour une location",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "200",
+            description = "Location mise à jour avec succès"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "500",
+            description = "Erreur interne du serveur"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "401",
+            description = "Full authentication is required to access this resource"
+        )
+    })
     public @ResponseBody ResponseEntity<Object>
     updateRentalController(
         @PathVariable("id") Integer id,
         @RequestPart("name") String name,
         @RequestPart("surface") String surface,
         @RequestPart("price") String price,
-        @RequestPart("description") String description)
-    {
+        @RequestPart("description") String description) {
         try {
             // sauvegarder l'image
             Rental rental = rentalService.getRentalById(id).orElseGet(null);
@@ -181,13 +274,12 @@ public class RentalController {
             rental.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                 .format(new Date()));
             rentalService.updateRental(rental);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Location mise à jour avec succès");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Rental updated successfully");
-        return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 
     /**
@@ -198,14 +290,40 @@ public class RentalController {
      */
 
     @DeleteMapping("/rentals/{id}")
+    @Operation(
+        summary = "Supprimer une location",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "200",
+            description = "Location supprimée avec succès"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "500",
+            description = "Erreur interne du serveur"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "401",
+            description = "Full authentication is required to access this resource"
+        )
+    })
     public ResponseEntity<Object> deleteRentalController(@PathVariable("id") Integer id) {
-        // delete all the messages related to the rental
-        messageService.deleteAllMessagesOfRental(id);
+        try {
+            // supprimer les messages de la location
+            messageService.deleteAllMessagesOfRental(id);
 
-        // delete the rental
-        rentalService.deleteRental(id);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Rental deleted successfully");
-        return new ResponseEntity<Object>(response, HttpStatus.OK);
+            // supprimer la location
+            rentalService.deleteRental(id);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Location supprimée avec succès");
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
