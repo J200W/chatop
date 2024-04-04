@@ -4,17 +4,23 @@ Les propriétaires peuvent publier des annonces de location et les locataires pe
 De plus, ils peuvent contacter les propriétaires des annonces qui les intéressent pour obtenir plus d'informations.
 
 ## Technologies utilisées
-- Backend: Spring Boot (Java)
+- Backend
+- Spring Boot (Java)
 - Frontend: Angular
 - Base de données: MySQL
 - Documentation de l'API: Swagger
 
 ## Fonctionnalités
-- Authentification: Les utilisateurs doivent s'authentifier pour accéder aux annonces de location.
-- Recherche d'annonces: Les utilisateurs peuvent rechercher des annonces de location en fonction de différents critères (lieu, prix, description, surface, etc.).
-- Contact propriétaire: Les utilisateurs peuvent contacter les propriétaires des annonces qui les intéressent.
-- Gestion des utilisateurs: Les utilisateurs peuvent créer un compte, se connecter et gérer leur profil.
-- Gestion des annonces: Les propriétaires peuvent ajouter, modifier et supprimer leurs annonces de location.
+### Authentification 
+Les utilisateurs doivent s'authentifier pour accéder aux annonces de location. 
+### Recherche d'annonces
+Les utilisateurs peuvent rechercher des annonces de location en fonction de différents critères (lieu, prix, description, surface, etc.).
+### Contact propriétaire
+Les utilisateurs peuvent contacter les propriétaires des annonces qui les intéressent.
+### Gestion des utilisateurs
+Les utilisateurs peuvent créer un compte, se connecter et gérer leur profil.
+### Gestion des annonces
+Les propriétaires peuvent ajouter, modifier et supprimer leurs annonces de location.
 
 ## Comment initialiser le projet sur votre machine
 - Clonez le repository depuis GitHub.
