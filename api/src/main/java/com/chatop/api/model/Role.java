@@ -1,5 +1,6 @@
 package com.chatop.api.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,16 +12,18 @@ import jakarta.persistence.Table;
 
 import lombok.Data;
 
+/**
+ * La classe Role est utilisée pour stocker les rôles des utilisateurs
+ */
+
 @Data
 @Entity
 @Table(name = "role")
-/**
- * The role class
- */
+@Schema(name = "Role", description = "La classe Role est utilisée pour stocker les rôles des utilisateurs")
 public class Role {
 
     /**
-     * The id of the role
+     * L'identifiant du rôle
      */
 
     @Id
@@ -28,7 +31,7 @@ public class Role {
     private Integer id;
 
     /**
-     * The name of the role
+     * Le nom du rôle
      */
 
     @Enumerated(EnumType.STRING)
@@ -36,14 +39,14 @@ public class Role {
     private ERole name;
 
     /**
-     * The default constructor of the role
+     * Le constructeur du rôle
      */
 
     public Role() {}
 
     /**
-     * The constructor of the role
-     * @param name The name of the role
+     * Le constructeur du rôle avec le nom du rôle
+     * @param name Le nom du rôle
      */
     public Role(ERole name) {
         this.name = name;

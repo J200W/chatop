@@ -1,6 +1,7 @@
 package com.chatop.api.model;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "rental")
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Schema(name = "Rental", description = "La classe Rental est utilisée pour stocker les locations")
 public class Rental {
 
     /**

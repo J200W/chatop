@@ -1,27 +1,30 @@
-# Châtop
-Portail de mise en relation locataires-propriétaires pour la location saisonnière
-Ce projet est un portail en ligne permettant aux utilisateurs de rechercher et de contacter les propriétaires de propriétés disponibles à la location saisonnière sur la côte basque, et éventuellement dans toute la France. Les utilisateurs doivent s'authentifier pour accéder aux annonces de location.
+# Bienvenue sur Châtop
+Châtop est un portail de mise en relation locataires-propriétaires pour la location saisonnière.
+Les propriétaires peuvent publier des annonces de location et les locataires peuvent rechercher des annonces qui correspondent à leurs critères.
+De plus, ils peuvent contacter les propriétaires des annonces qui les intéressent pour obtenir plus d'informations.
 
 ## Technologies utilisées
-- Backend: Spring Boot
-- Base de données: MySQL ```(dans le fichier /api/src/ressources/data.txt)```
+- Backend: Spring Boot (Java)
+- Frontend: Angular
+- Base de données: MySQL
 - Documentation de l'API: Swagger
-- Outils supplémentaires: Postman, Mockoon
 
 ## Fonctionnalités
 - Authentification: Les utilisateurs doivent s'authentifier pour accéder aux annonces de location.
-- Recherche d'annonces: Les utilisateurs peuvent rechercher des annonces de location en fonction de différents critères (lieu, prix, nombre de chambres, etc.).
+- Recherche d'annonces: Les utilisateurs peuvent rechercher des annonces de location en fonction de différents critères (lieu, prix, description, surface, etc.).
 - Contact propriétaire: Les utilisateurs peuvent contacter les propriétaires des annonces qui les intéressent.
 - Gestion des utilisateurs: Les utilisateurs peuvent créer un compte, se connecter et gérer leur profil.
 - Gestion des annonces: Les propriétaires peuvent ajouter, modifier et supprimer leurs annonces de location.
 
-## Comment utiliser le projet
-- Cloner le repository depuis GitHub.
-- Installer les dépendances avec ```npm install```.
-- Créer une base de données PostgreSQL et configurer les paramètres de connexion dans le fichier .env.
-- Exécuter les migrations de la base de données avec ```npm run migrate```.
-- Démarrer le serveur avec ```npm start```.
-- Accéder à l'API via ```http://localhost:9192```.
+## Comment initialiser le projet sur votre machine
+- Clonez le repository depuis GitHub.
+- Depuis le dossier ```frontend```, installez les dépendances avec ```npm install```.
+- Depuis le dossier ```frontend```, démarrez le serveur Angular avec ```ng serve```.
+- Créez une base de données MySQL et importez le schéma fourni dans le fichier  ```/api/src/main/ressources/data.sql```.
+- Installez maven sur votre machine.
+- Depuis le dossier ```api```, démarrez le serveur Spring Boot avec ```mvn spring-boot:run```.
+- Accédez à l'API via ```http://localhost:9192/swagger-ui.html```.
+- Accédez à l'application Angular via ```http://localhost:4200```.
 
 ## Documentation de l'API
 La documentation de l'API est disponible via Swagger. Une fois le serveur démarré, accédez à ```http://localhost:9192/api-docs``` pour voir la documentation et tester les différentes routes de l'API.
