@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Rental } from 'src/app/features/rentals/interfaces/rental.interface';
 import { SessionService } from 'src/app/services/session.service';
 import { MessageRequest } from '../../interfaces/api/messageRequest.interface';
@@ -20,6 +20,7 @@ export class DetailComponent implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private fb: FormBuilder,
         private messagesService: MessagesService,
         private rentalsService: RentalsService,
@@ -32,9 +33,16 @@ export class DetailComponent implements OnInit {
     public ngOnInit(): void {
         const id = this.route.snapshot.paramMap.get('id')!;
 
-        this.rentalsService.detail(id).subscribe((rental: Rental) => {
-            this.rental = rental;
-        });
+        this.rentalsService
+            .detail(id)
+            .subscribe((rental: Rental) => {
+                this.rental = rental;
+            })
+            .add(() => {
+                if (this.rental == null) {
+                    this.router.navigate(['/404']);
+                }
+            });
     }
 
     public back() {
@@ -45,7 +53,7 @@ export class DetailComponent implements OnInit {
         const message = {
             rental: this.rental!.id,
             sender: this.sessionService.user?.id,
-            content: this.messageForm.value.content
+            content: this.messageForm.value.content,
         } as MessageRequest;
 
         this.messagesService
