@@ -72,7 +72,6 @@ public class RentalService {
      * @param id the id of the rental to delete
      */
     public void deleteRental(Integer id) {
-        System.out.println("Deleting rental with id: " + id);
         rentalRepository.deleteById(id);
     }
 }

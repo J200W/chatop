@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.core.io.Resource;
 
 /**
  * La classe Rental représente une location
@@ -61,6 +62,11 @@ public class Rental {
      */
     @Column(name = "picture")
     private String picture;
+
+/*    *//*
+     * Le fichier de la location
+     *//*
+    private Res file;*/
 
     /*
      * La date de création de la location

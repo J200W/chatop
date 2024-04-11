@@ -45,7 +45,7 @@ public class MessageController {
             System.out.println("Message: " + message.getContent());
             messageService.addMessage(message);
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Message ajouté avec succès");
+            response.put("message", "Message sent successfully");
             return new ResponseEntity<Object>(response, HttpStatus.OK);
         }
         catch(Exception e){

@@ -12,10 +12,6 @@ export class UserService {
     constructor(private httpClient: HttpClient) {}
 
     public getUserById(id: number): Observable<User> {
-        return this.httpClient.get<User>(`${this.pathService}/${id}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-        });
+        return this.httpClient.get<User>(`${this.pathService}/${id}`);
     }
 }

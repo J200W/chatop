@@ -36,7 +36,6 @@ export class FormComponent implements OnInit {
             this.rentalsService
                 .detail(this.id)
                 .subscribe((rental: Rental) => {
-                    console.log(rental);
                     this.initForm(rental);
                 });
         } else {

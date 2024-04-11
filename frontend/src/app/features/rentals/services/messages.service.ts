@@ -15,11 +15,6 @@ export class MessagesService {
     }
 
     public send(messageRequest: MessageRequest): Observable<MessageResponse> {
-        return this.httpClient.post<MessageResponse>(this.pathService, messageRequest,
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                }
-            });
+        return this.httpClient.post<MessageResponse>(this.pathService, messageRequest);
     }
 }
