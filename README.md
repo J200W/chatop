@@ -21,6 +21,10 @@ Les utilisateurs peuvent contacter les propriétaires des annonces qui les inté
 Les utilisateurs peuvent créer un compte, se connecter et gérer leur profil.
 ### Gestion des annonces
 Les propriétaires peuvent ajouter, modifier et supprimer leurs annonces de location.
+### Gestion des photos
+- Les propriétaires peuvent ajouter, modifier et supprimer des photos pour illustrer leurs annonces.
+- Les photos sont stockées dans le serveur en backend, dans le dossier ```/api/src/main/resources/assets/uploads/```.
+- Vous devez spécifier le chemin complet du projet pour afficher les images dans l'application Spring Boot (dans le fichier ```/api/src/main/resources/application.yml```, avec la propriété : ```store.rootDir```).
 
 ## Comment initialiser le projet sur votre machine
 - Clonez le repository depuis GitHub.

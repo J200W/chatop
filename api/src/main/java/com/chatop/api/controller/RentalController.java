@@ -1,5 +1,6 @@
 package com.chatop.api.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,15 +48,9 @@ public class RentalController {
     /**
      * Le chemin du répertoire de téléchargement d'images
      */
-    @Value("${store.rootDir}")
-    private String rootDir;
-
 
     @Value("${store.uploadDir}")
     private String uploadDir;
-
-    @Value("${store.localPath}")
-    private String localPath;
 
     /**
      * Obtenir toutes les locations
@@ -181,13 +179,13 @@ public class RentalController {
         String uniqueID = UUID.randomUUID().toString();
 
         // chemin complet de l'image pour le stockage
-        String fullPath = rootDir + uploadDir + filename + uniqueID + extension;
+        String fullPath = uploadDir + filename + uniqueID + extension;
 
-        // chemin local de l'image pour la base de données
-        String localPathImg = localPath + filename + uniqueID + extension;
+/*        // chemin local de l'image pour la base de données
+        String localPathImg = localPath + filename + uniqueID + extension;*/
         try {
             // create the directory to store the image
-            Path path = Paths.get(rootDir + uploadDir);
+            Path path = Paths.get(uploadDir);
             if (!Files.exists(path)) {
                 Files.createDirectories(path);
             }
@@ -201,7 +199,7 @@ public class RentalController {
             rental.setSurface(Double.parseDouble(surface));
             rental.setPrice(Double.parseDouble(price));
             rental.setDescription(description);
-            rental.setPicture(localPathImg);
+            rental.setPicture("http://localhost:9192/api/rentals/file/" + filename + uniqueID + extension);
             rental.setOwner(this.userRepository.
                 findById(Integer.parseInt(owner)).orElseGet(null));
             rental.setCreated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -275,7 +273,7 @@ public class RentalController {
                 .format(new Date()));
             rentalService.updateRental(rental);
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Location mise à jour avec succès");
+            response.put("message", "Rental successfully updated");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -316,12 +314,79 @@ public class RentalController {
             // supprimer les messages de la location
             messageService.deleteAllMessagesOfRental(id);
 
+            // Supprimer l'image
+            String picture = rentalService.getRentalById(id).orElseGet(null).getPicture();
+            String filename = picture.split("/")[picture.split("/").length - 1];
+            try {
+                Files.deleteIfExists(Paths.get(uploadDir + filename));
+            } catch (IOException e) {
+                System.out.println("Erreur lors de la suppression de l'image de la location" + e.getMessage());
+            }
+
             // supprimer la location
             rentalService.deleteRental(id);
             Map<String, String> response = new HashMap<>();
             response.put("message", "Location supprimée avec succès");
 
+
             return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Récupérer une image
+     *
+     * @param fileName - Le nom du fichier
+     * @return - Le fichier
+     */
+    @Operation(
+        summary = "Récupérer une image",
+        security = @SecurityRequirement(name = "noAuth")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "200",
+            description = "Fichier récupéré avec succès"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "404",
+            description = "Fichier non trouvé"
+        ),
+        @ApiResponse(
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")},
+            responseCode = "500",
+            description = "Erreur interne du serveur"
+        )
+    })
+    @GetMapping("/rentals/file/{fileName}")
+    public ResponseEntity<byte[]> getFile(@PathVariable String fileName) {
+        try {
+            // Construire le chemin du fichier
+            String filePath = uploadDir + fileName;
+
+            // Vérifier que le fichier existe
+            File file = new File(filePath);
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Charger le contenu du fichier en tant que tableau de bytes
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+
+            // Construire les en-têtes de la réponse
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentLength(fileContent.length);
+            headers.setContentDispositionFormData("attachment", fileName);
+
+            // Renvoyer le contenu du fichier en tant que tableau de bytes
+            return ResponseEntity.ok()
+                .headers(headers)
+                .body(fileContent);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

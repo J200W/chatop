@@ -92,6 +92,9 @@ public class WebSecurityConfig {
                 // authentifiés)
                 .requestMatchers("/api/auth/**").permitAll()
 
+                // les chemins de fichiers (pour les utilisateurs non authentifiés)
+                .requestMatchers("/api/rentals/file/**").permitAll()
+
                 // les chemins de test (pour les utilisateurs non authentifiés)
                 .requestMatchers("/api/test/**").permitAll()
 

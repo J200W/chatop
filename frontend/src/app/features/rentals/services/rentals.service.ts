@@ -26,6 +26,7 @@ export class RentalsService {
         return this.httpClient.get<Rental>(`${this.pathService}/${id}`);
     }
 
+
     public create(form: FormData): Observable<RentalResponse> {
         return this.httpClient.post<RentalResponse>(this.pathService, form);
     }
@@ -33,20 +34,11 @@ export class RentalsService {
     public update(id: string, form: FormData): Observable<RentalResponse> {
         return this.httpClient.put<RentalResponse>(
             `${this.pathService}/${id}`,
-            form,
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                }
-            }
+            form
         );
     }
 
     public delete(id: number): Observable<void> {
-        return this.httpClient.delete<void>(`${this.pathService}/${id}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-        });
+        return this.httpClient.delete<void>(`${this.pathService}/${id}`);
     }
 }
