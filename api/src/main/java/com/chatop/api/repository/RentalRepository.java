@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.chatop.api.model.Rental;
 
 /**
- * The rental repository
+ * Le repository RentalRepository est utilisé pour gérer les locations
  */
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Integer> {
