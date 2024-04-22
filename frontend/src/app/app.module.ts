@@ -30,13 +30,14 @@ const materialModule = [
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule, 
+    BrowserAnimationsModule,
     FlexLayoutModule,
     HttpClientModule,
     ...materialModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass:
+        JwtInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

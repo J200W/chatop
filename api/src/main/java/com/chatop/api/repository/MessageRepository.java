@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.chatop.api.model.Message;
 
 /**
- * The message repository
+ * Le repository MessageRepository est utilisé pour gérer les messages
  */
 
 public interface MessageRepository extends JpaRepository<Message, Integer> {
