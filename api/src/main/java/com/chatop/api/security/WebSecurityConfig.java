@@ -64,7 +64,7 @@ public class WebSecurityConfig {
     }
 
     /*
-     * Cette méthode est utilisée pour encodeur le mot de passe de l'utilisateur
+     * Cette méthode est utilisée pour encoder le mot de passe de l'utilisateur
      */
     @Bean
     public PasswordEncoder passwordEncoder() {

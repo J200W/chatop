@@ -44,7 +44,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         // Essayer de valider le jeton JWT
         try {
             // Extraire le jeton JWT de l'en-tête de la requête
@@ -68,6 +68,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 // Mettre à jour les détails de l'authentification
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
+                // Définir l'authentification dans le contexte de sécurité
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {

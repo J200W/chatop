@@ -144,7 +144,7 @@ VALUES (1, 3),  -- Admin
 
 -- Inserting rentals owned by the admins
 
-INSERT INTO rental (name, description, picture, price, surface, created_at, updated_at, owner_id)
+/*INSERT INTO rental (name, description, picture, price, surface, created_at, updated_at, owner_id)
 VALUES ('Cozy Apartment 1', 'A cozy apartment located in the city center.', 'https://picsum.photos/400/300', 1000.00,
         75.5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
        ('Modern Loft 1', 'A modern loft with minimalist design.', 'https://picsum.photos/450/350', 1500.00, 90.0,
@@ -224,10 +224,10 @@ VALUES ('Cozy Apartment 1', 'A cozy apartment located in the city center.', 'htt
        ('Mountain Cabin 8', 'A charming cabin nestled in the mountains.', 'https://picsum.photos/420/320', 1200.00,
         80.0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 4),
        ('Country Villa 8', 'A luxurious villa surrounded by serene countryside.', 'https://picsum.photos/480/380',
-        1800.00, 100.5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 5);
+        1800.00, 100.5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 5);*/
 
 -- Inserting messages from users
-INSERT INTO message (content, sender_id, send_at, rental_id)
+/*INSERT INTO message (content, sender_id, send_at, rental_id)
 VALUES ('Hi, I am interested in renting the apartment for a few months.', 6, CURRENT_TIMESTAMP, 1),
        ('What is the policy on subletting the loft?', 7, CURRENT_TIMESTAMP, 2),
        ('Are there any upcoming renovations planned for the beach house?', 8, CURRENT_TIMESTAMP, 3),
@@ -247,7 +247,7 @@ VALUES ('Hi, I am interested in renting the apartment for a few months.', 6, CUR
        ('Could you provide more details on the security deposit for the apartment?', 7, CURRENT_TIMESTAMP, 1),
        ('What is the process for reporting maintenance issues in the loft?', 8, CURRENT_TIMESTAMP, 2),
        ('Are there lifeguards on duty at the beach near the beach house?', 9, CURRENT_TIMESTAMP, 3),
-       ('Is there a barbecue grill available for use at the cabin?', 10, CURRENT_TIMESTAMP, 4);
+       ('Is there a barbecue grill available for use at the cabin?', 10, CURRENT_TIMESTAMP, 4);*/
 
 -- Update the default values for the rental table
 

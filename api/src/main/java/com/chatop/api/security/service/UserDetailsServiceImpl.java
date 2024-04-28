@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     /**
      * Cette méthode est utilisée pour charger les informations de l'utilisateur
      * avec son email à partir de la base de données lors de l'authentification
-     * 
+     *
      * @param email est l'email de l'utilisateur
      * @return UserDetails
      * @throws UsernameNotFoundException
@@ -34,7 +34,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + email));
-
         return UserDetailsImpl.build(user);
     }
 }
